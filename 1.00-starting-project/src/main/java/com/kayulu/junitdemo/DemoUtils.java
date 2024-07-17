@@ -34,17 +34,11 @@ public class DemoUtils {
     }
 
     public Object checkNull(Object obj) {
-        if (obj != null) {
-            return obj;
-        }
-        return null;
+        return obj;
     }
 
     public Boolean isGreater(int n1, int n2) {
-        if (n1 > n2) {
-            return true;
-        }
-        return false;
+        return n1 > n2;
     }
 
     public String throwException(int a) throws Exception {

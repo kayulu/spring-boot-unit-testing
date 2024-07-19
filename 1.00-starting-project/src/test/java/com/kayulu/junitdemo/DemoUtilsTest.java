@@ -8,6 +8,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 //@DisplayNameGeneration(DisplayNameGenerator.Simple.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class DemoUtilsTest {
 
     private DemoUtils demoUtils;
@@ -33,6 +34,7 @@ class DemoUtilsTest {
         System.out.println("@AfterEach runs after each test-method\n");
     }
 
+    @Order(2)
     @Test
     @DisplayName("Equals and Not Equals")
     void testEqualsAndNotEquals() {
@@ -40,6 +42,7 @@ class DemoUtilsTest {
         assertNotEquals(19, demoUtils.add(1,9), "1 + 9 must not be 19");
     }
 
+    @Order(1)
     @Test
     @DisplayName("Null and Not Null")
     void testNullAndNotNull() {

@@ -7,15 +7,15 @@ public class FizzBuzz {
     // else write number
 
     public static String compute(Long number) {
+        StringBuilder sb = new StringBuilder();
 
-        if(number % 3 == 0) {
-            if(number % 5 == 0)
-                return "FizzBuzz";
-            return "Fizz";
-        }
-        else if(number % 5 == 0)
-            return "Buzz";
+        if(number % 3 == 0)
+            sb.append("Fizz");
+        if(number % 5 == 0)
+            sb.append("Buzz");
+        if(sb.isEmpty())
+            sb.append(number);
 
-        return number.toString();
+        return sb.toString();
     }
 }

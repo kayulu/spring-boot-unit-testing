@@ -1,9 +1,11 @@
 package com.kayulu.tdd;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FizzBuzzTest {
@@ -38,5 +40,46 @@ class FizzBuzzTest {
     @Order(4)
     void testForNotDivisibleByThreeAndFive() {
         assertEquals("1", FizzBuzz.compute(1L), "Should return 1");
+    }
+
+//    @ParameterizedTest
+    @ParameterizedTest(name = "value={0}, expected={1}")
+    @DisplayName("Divisible by Three and Five; CSV Parameterized")
+    @CsvSource({
+            "1,1",
+            "2,2",
+            "3,Fizz",
+            "4,4",
+            "5,Buzz",
+            "6,Fizz",
+            "15,FizzBuzz"
+    })
+    @Order(5)
+    void testCsvData(int value, String expected) {
+        assertEquals(expected, FizzBuzz.compute((long) value), "Result should be " + expected);
+    }
+
+    @ParameterizedTest(name = "value={0}, expected={1}")
+    @DisplayName("Divisible by Three and Five; CSV File Parameterized")
+    @CsvFileSource(resources = "/small-test-data.csv")
+    @Order(6)
+    void testSmallCsvFileData(int value, String expected) {
+        assertEquals(expected, FizzBuzz.compute((long) value), "Result should be " + expected);
+    }
+
+    @ParameterizedTest(name = "value={0}, expected={1}")
+    @DisplayName("Divisible by Three and Five; CSV File Parameterized")
+    @CsvFileSource(resources = "/medium-test-data.csv")
+    @Order(7)
+    void testMediumCsvFileData(int value, String expected) {
+        assertEquals(expected, FizzBuzz.compute((long) value), "Result should be " + expected);
+    }
+
+    @ParameterizedTest(name = "value={0}, expected={1}")
+    @DisplayName("Divisible by Three and Five; CSV File Parameterized")
+    @CsvFileSource(resources = "/large-test-data.csv")
+    @Order(8)
+    void testLargeCsvFileData(int value, String expected) {
+        assertEquals(expected, FizzBuzz.compute((long) value), "Result should be " + expected);
     }
 }

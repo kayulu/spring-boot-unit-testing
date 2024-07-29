@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +31,9 @@ public class ApplicationExampleTest {
 
     @Value("${info.app.version}")
     private String appVersion;
+
+    @Autowired
+    private ApplicationContext context;
 
     @Autowired
     private CollegeStudent student;
@@ -92,5 +96,31 @@ public class ApplicationExampleTest {
     public void checkNullForStudentGrades() {
         assertNotNull(studentGrades.checkNull(student.getStudentGrades()),
                 "object should not be null");
+    }
+
+    @Test
+    @DisplayName("Create student without grades init")
+    public void createStudentsWithoutGradesInit() {
+        CollegeStudent studentTwo = context.getBean("collegeStudent", CollegeStudent.class);
+        assertNull(studentGrades.checkNull(studentTwo.getStudentGrades()), "Grades should be null");
+    }
+
+    @Test
+    @DisplayName("Verify students are prototypes")
+    public void verifyStudentsArePrototypes() {
+        CollegeStudent studentTwo = context.getBean("collegeStudent", CollegeStudent.class);
+        assertNotSame(student, studentTwo);
+        assertTrue(context.isPrototype("collegeStudent"));
+    }
+
+    @Test
+    @DisplayName("Find grade point average")
+    public void findGradePointAverage() {
+
+        assertAll("Testing all assertEquals",
+                () -> assertEquals(376.5, studentGrades.addGradeResultsForSingleClass(
+                        student.getStudentGrades().getMathGradeResults())),
+                () -> assertEquals(94.13, studentGrades.findGradePointAverage(
+                        student.getStudentGrades().getMathGradeResults())));
     }
 }

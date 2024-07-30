@@ -1,12 +1,9 @@
 package com.kayulu.component;
 
-import com.kayulu.component.dao.ApplicationDao;
-import com.kayulu.component.models.CollegeStudent;
 import com.kayulu.component.service.ApplicationService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 
 @SpringBootApplication
 public class MvcTestingExampleApplication {
@@ -16,21 +13,9 @@ public class MvcTestingExampleApplication {
 	}
 
 	/* New for Section 2.2 */
-	@Bean(name = "applicationExample")
+	@Bean(name = "applicationService")
 	ApplicationService getApplicationService() {
 		return new ApplicationService();
-	}
-
-	/* New for Section 2.2 */
-	@Bean(name = "applicationDao")
-	ApplicationDao getApplicationDao() {
-		return new ApplicationDao();
-	}
-
-	@Bean(name = "collegeStudent")
-	@Scope(value = "prototype")
-	CollegeStudent getCollegeStudent() {
-		return new CollegeStudent();
 	}
 
 }

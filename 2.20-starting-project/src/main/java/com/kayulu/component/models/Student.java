@@ -5,4 +5,8 @@ public interface Student {
     String studentInformation();
 
     String getFullName();
+
+    StudentGrades getStudentGrades();
+
+    void setStudentGrades(StudentGrades grades);
 }

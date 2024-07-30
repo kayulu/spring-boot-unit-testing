@@ -87,3 +87,20 @@ In this example:
 - The `verify(...)` method checks that `someMethod` was called on the mock.
 
 Mockito is a powerful tool for writing effective unit tests by enabling precise control over dependencies and interactions, ultimately leading to more robust and maintainable code.
+
+## @MockBean
+
+The `@MockBean` annotation in Spring Boot is necessary for integrating Mockito mocks into the Spring application context, enabling the replacement of Spring-managed beans with mock instances. This annotation is particularly useful when writing integration tests or tests that require the Spring application context to be loaded.
+
+### When to Use Which Annotation
+
+- **Use `@MockBean`**:
+  - When you need to replace Spring beans in the application context with mock instances.
+  - For integration tests that require the Spring application context to be loaded.
+  - When you are testing controllers, services, or repositories in the context of a Spring Boot application.
+
+- **Use `@Mock` and `@InjectMocks`**:
+  - For unit tests where you want to isolate the class under test from its dependencies.
+  - When you do not need to load the Spring application context.
+  - For faster, lightweight tests focusing purely on the business logic of a single class.
+

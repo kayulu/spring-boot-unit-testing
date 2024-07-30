@@ -7,16 +7,16 @@ import com.kayulu.component.service.ApplicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
@@ -31,11 +31,11 @@ public class MockitoExampleTest {
     @Autowired
     StudentGrades studentGrades;
 
-    @Mock
-    ApplicationDao dao;
+    @MockBean
+    ApplicationDao dao; // this bean will be in the application context and can be autowired by other beans
 
-    @InjectMocks
-    ApplicationService service;
+    @Autowired
+    ApplicationService service; // the ApplicationDao dependency will be autowired when this bean is created
 
     @BeforeEach
     public void setUp() {
@@ -70,5 +70,23 @@ public class MockitoExampleTest {
         List<Double> grades = Arrays.asList(234.0, 23443.0); // arbitrary List<Double>
 
         assertEquals(100.0, service.addGradeResultsForSingleClass(grades));
+    }
+
+    @Test
+    @DisplayName("Find Gpa")
+    public void assertEqualsTestFindGpa() {
+        when(dao.findGradePointAverage(studentGrades.getMathGradeResults())).thenReturn(90.0);
+
+        assertEquals(90.0, dao.findGradePointAverage(studentOne.getStudentGrades().getMathGradeResults()));
+
+        verify(dao).findGradePointAverage(studentGrades.getMathGradeResults());
+    }
+
+    @Test
+    @DisplayName("Check null")
+    public void assertCheckNull() {
+        when(dao.checkNull(studentOne.getStudentGrades().getMathGradeResults())).thenReturn(true);
+
+        assertNotNull(service.checkNull(studentOne.getStudentGrades().getMathGradeResults()));
     }
 }

@@ -16,13 +16,12 @@ import org.springframework.context.ApplicationContext;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class MockitoExampleTest {
-    private static List<Student> collegeStudents;
+    private static List<CollegeStudent> collegeStudents;
 
     @Autowired
     ApplicationContext context;
@@ -95,5 +94,30 @@ public class MockitoExampleTest {
         when(dao.getStudentByEmail("john.mayer@example.com")).thenReturn(collegeStudents.get(1));
 
         assertFalse(service.isNullStudent("john.mayer@example.com"));
+    }
+
+    @Test
+    @DisplayName("Throws exception")
+    public void throwsException() {
+        when(dao.getStudentByEmail("not.there@example.com"))
+                .thenThrow(RuntimeException.class);
+
+        assertThrows(RuntimeException.class, () -> service.addGradeResultsForStudent("not.there@example.com"));
+
+        verify(dao, times(1)).getStudentByEmail("not.there@example.com");
+    }
+
+    @Test
+    @DisplayName("Multiple stubbing")
+    public void consecutiveStubbing() {
+        when(dao.getStudentByEmail("not.there@example.com"))
+                .thenThrow(RuntimeException.class) // for first call
+                .thenReturn(null);  // for all following calls
+
+        assertThrows(RuntimeException.class, () -> service.addGradeResultsForStudent("not.there@example.com"));
+
+        assertTrue(service.isNullStudent("not.there@example.com"));
+
+        verify(dao, times(2)).getStudentByEmail("not.there@example.com");
     }
 }

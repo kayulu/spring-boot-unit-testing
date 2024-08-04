@@ -27,29 +27,38 @@ public class StudentAndGradeServiceTest {
 
     @BeforeEach
     public void setupDatabase() {
-        jdbcTemplate.execute("INSERT INTO student(id, firstname, lastname, email_Address)" +
-                "VALUES (0, 'Kay', 'Ulu', 'kay.ulu@example.com')");
+        CollegeStudent testStudent = new CollegeStudent("Liam", "Smith", "liam.smith@example.com");
+
+        studentDao.save(testStudent); // H2 sequences for primary keys start from 1
     }
 
     @Test
-    public void createStudentService() {
+    public void createStudentAndFindByEmailAddress() {
         studentService.createNewStudent("Emma", "Johnson", "emma.johnson@example.com");
 
         CollegeStudent student = studentDao.findByEmailAddress("emma.johnson@example.com");
-
-        System.out.println("Id: " + student.getId());
 
         assertEquals("emma.johnson@example.com", student.getEmailAddress(), "find by email");
     }
 
     @Test
-    public void checkIfStudentIsNull() {
-        assertTrue(studentService.checkIfStudentIsPresent(0), "Student with id 0 should exist");
+    public void existingStudentRetrievable() {
+        assertTrue(studentService.checkIfStudentIsPresent(1), "Student with id 1 should exist");
+        assertFalse(studentService.checkIfStudentIsPresent(2), "Student with id 2 should not exist");
+    }
+
+    @Test
+    public void existingStudentDeletable() {
+        assertTrue(studentService.checkIfStudentIsPresent(1), "Student with id 1 should exist");
+
+        studentService.deleteStudentById(1);
+
         assertFalse(studentService.checkIfStudentIsPresent(1), "Student with id 1 should not exist");
     }
 
     @AfterEach
     public void setupAfterTransaction() {
         jdbcTemplate.execute("DELETE FROM student");
+        jdbcTemplate.execute("ALTER TABLE student ALTER COLUMN ID RESTART WITH 1");
     }
 }

@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,6 +58,19 @@ public class StudentAndGradeServiceTest {
         studentService.deleteStudentById(1);
 
         assertFalse(studentService.checkIfStudentIsPresent(1), "Student with id 1 should not exist");
+    }
+
+    @Sql("/insertData.sql")
+    @Test
+    public void getGradeBookService() {
+        Iterable<CollegeStudent> students = studentService.getGradeBook();
+
+        List<CollegeStudent> studentList = new ArrayList<>();
+
+        for(CollegeStudent stud : students)
+            studentList.add(stud);
+
+        assertEquals(5, studentList.size());
     }
 
     @AfterEach

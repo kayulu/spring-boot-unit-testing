@@ -35,4 +35,8 @@ public class StudentAndGradeService {
         studentDao.deleteById(id);
         logger.info("student with id {} exists: {}", id, checkIfStudentIsPresent(id));
     }
+
+    public Iterable<CollegeStudent> getGradeBook() {
+        return studentDao.findAll();
+    }
 }

@@ -104,3 +104,23 @@ The `@MockBean` annotation in Spring Boot is necessary for integrating Mockito m
   - When you do not need to load the Spring application context.
   - For faster, lightweight tests focusing purely on the business logic of a single class.
 
+# 3. MockMvc
+MockMvc is a Spring framework class that provides support for testing Spring MVC controllers by simulating HTTP requests and responses, allowing for thorough testing of controller endpoints without the need to start a full web server.
+
+### Breakdown of simple usage code
+```java
+MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/"))
+                .andExpect(status().isOk()).andReturn();
+```
+
+#### 1. `mockMvc.perform(MockMvcRequestBuilders.get("/"))`
+- **`mockMvc`**: This is an instance of `MockMvc`, which is used to simulate HTTP requests in tests.
+- **`perform`**: This method is used to execute an HTTP request.
+- **`MockMvcRequestBuilders.get("/")`**: This constructs a GET request to the root URL (`"/"`).
+
+#### 2. `.andExpect(status().isOk())`
+- **`andExpect`**: This method is used to define expectations about the result of the request.
+- **`status().isOk()`**: This specifies that the expected HTTP status code of the response should be 200 (OK).
+
+#### 3. `.andReturn()`
+- **`andReturn`**: This method returns the `MvcResult` object, which contains the results of the performed request, including the response.

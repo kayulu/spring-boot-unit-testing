@@ -24,6 +24,10 @@ public class StudentAndGradeService {
         studentDao.save(student);
     }
 
+    public void createNewStudent(CollegeStudent student) {
+        studentDao.save(student);
+    }
+
     public boolean checkIfStudentIsPresent(int id) {
         Optional<CollegeStudent> studentOptional = studentDao.findById(id);
 

@@ -86,6 +86,12 @@ class GradebookControllerTest {
         CollegeStudent student = new CollegeStudent(
                 "Emma", "Johnson", "emma.johnson@example.com");
 
+        List<CollegeStudent> students = new ArrayList<>(List.of(student));
+
+        when(studentService.getGradeBook()).thenReturn(students);
+
+        assertEquals(students, studentService.getGradeBook());
+
         MvcResult result = mockMvc.perform(post("/")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("firstname", request.getParameter("firstname"))

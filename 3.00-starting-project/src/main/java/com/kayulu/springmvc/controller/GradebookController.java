@@ -36,6 +36,9 @@ public class GradebookController {
 
 		studentAndGradeService.createNewStudent(student);
 
+		Iterable<CollegeStudent> students = studentAndGradeService.getGradeBook();
+		model.addAttribute("students", students);
+
 		return "index";
 	}
 

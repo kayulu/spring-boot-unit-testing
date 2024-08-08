@@ -21,13 +21,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -105,6 +105,18 @@ class GradebookControllerTest {
         CollegeStudent verifyStudent = studentDao.findByEmailAddress("emma.johnson@example.com");
 
         assertNotNull(verifyStudent, "Student should be found in DB");
+    }
+
+    @Test
+    public void deleteStudentHttpRequest() throws Exception {
+        assertNotNull(studentDao.findById(1));
+
+        MvcResult result = mockMvc.perform(delete("/delete/student/{id}", 1))
+                        .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(result.getModelAndView(), "index");
+
+        assertTrue(studentDao.findById(1).isEmpty());
     }
 
     @AfterEach

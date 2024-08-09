@@ -77,7 +77,7 @@ class GradebookControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         ModelAndView modelAndView = result.getModelAndView();
-
+        
         ModelAndViewAssert.assertViewName(modelAndView, "index");
     }
 
@@ -117,6 +117,16 @@ class GradebookControllerTest {
         ModelAndViewAssert.assertViewName(result.getModelAndView(), "index");
 
         assertTrue(studentDao.findById(1).isEmpty());
+    }
+
+    @Test
+    public void deleteStudentErrorPage() throws Exception {
+        assertTrue(studentDao.findById(0).isEmpty());
+
+        MvcResult result = mockMvc.perform(delete("/delete/student/{id}", 0))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(result.getModelAndView(), "error");
     }
 
     @AfterEach

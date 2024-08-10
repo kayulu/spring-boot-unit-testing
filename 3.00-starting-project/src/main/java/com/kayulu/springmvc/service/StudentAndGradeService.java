@@ -1,6 +1,12 @@
 package com.kayulu.springmvc.service;
 
 import com.kayulu.springmvc.models.CollegeStudent;
+import com.kayulu.springmvc.models.HistoryGrade;
+import com.kayulu.springmvc.models.MathGrade;
+import com.kayulu.springmvc.models.ScienceGrade;
+import com.kayulu.springmvc.repository.HistoryGradesDao;
+import com.kayulu.springmvc.repository.MathGradesDao;
+import com.kayulu.springmvc.repository.ScienceGradesDao;
 import com.kayulu.springmvc.repository.StudentDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +23,15 @@ public class StudentAndGradeService {
 
     @Autowired
     private StudentDao studentDao;
+
+    @Autowired
+    private MathGradesDao mathGradesDao;
+
+    @Autowired
+    private ScienceGradesDao scienceGradesDao;
+
+    @Autowired
+    private HistoryGradesDao historyGradesDao;
 
     public void createNewStudent(String firstname, String lastName, String email) {
         CollegeStudent student = new CollegeStudent(firstname, lastName, email);
@@ -42,5 +57,35 @@ public class StudentAndGradeService {
 
     public Iterable<CollegeStudent> getGradeBook() {
         return studentDao.findAll();
+    }
+
+    public boolean createGrade(double grade, int studentId, String gradeType) {
+        if(studentDao.findById(studentId).isEmpty() || grade < 0 || grade > 100)
+            return false;
+
+        try {
+            switch (gradeType.toLowerCase()) {
+                case "math" -> {
+                    MathGrade mathGrade = new MathGrade(grade);
+                    mathGrade.setStudentId(studentId);
+                    mathGradesDao.save(mathGrade);
+                }
+                case "science" -> {
+                    ScienceGrade scienceGrade = new ScienceGrade(grade);
+                    scienceGrade.setStudentId(studentId);
+                    scienceGradesDao.save(scienceGrade);
+                }
+                case "history" -> {
+                    HistoryGrade historyGrade = new HistoryGrade(grade);
+                    historyGrade.setStudentId(studentId);
+                    historyGradesDao.save(historyGrade);
+                }
+                default -> throw new IllegalArgumentException("Grade type not found");
+            }
+            return true;
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
     }
 }

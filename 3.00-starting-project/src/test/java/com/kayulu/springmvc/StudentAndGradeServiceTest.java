@@ -1,6 +1,12 @@
 package com.kayulu.springmvc;
 
 import com.kayulu.springmvc.models.CollegeStudent;
+import com.kayulu.springmvc.models.HistoryGrade;
+import com.kayulu.springmvc.models.MathGrade;
+import com.kayulu.springmvc.models.ScienceGrade;
+import com.kayulu.springmvc.repository.HistoryGradesDao;
+import com.kayulu.springmvc.repository.MathGradesDao;
+import com.kayulu.springmvc.repository.ScienceGradesDao;
 import com.kayulu.springmvc.repository.StudentDao;
 import com.kayulu.springmvc.service.StudentAndGradeService;
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +31,15 @@ public class StudentAndGradeServiceTest {
 
     @Autowired
     StudentDao studentDao;
+
+    @Autowired
+    MathGradesDao mathGradesDao;
+
+    @Autowired
+    ScienceGradesDao scienceGradesDao;
+
+    @Autowired
+    HistoryGradesDao historyGradesDao;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -71,6 +86,25 @@ public class StudentAndGradeServiceTest {
             studentList.add(stud);
 
         assertEquals(5, studentList.size());
+    }
+
+    @Test
+    public void createGradeService() {
+        // create and save a math-grade for a student
+        assertTrue(studentService.createGrade(80.3, 1, "math"));
+        assertTrue(studentService.createGrade(80.4, 1, "science"));
+        assertTrue(studentService.createGrade(80.5, 1, "history"));
+        assertFalse(studentService.createGrade(80.5, 1, "illegal"));
+
+        // get all math-grades of a student
+        Iterable<MathGrade> mathGrades = mathGradesDao.findGradesByStudentId(1);
+        Iterable<ScienceGrade> scienceGrades = scienceGradesDao.findGradesByStudentId(1);
+        Iterable<HistoryGrade> historyGrades = historyGradesDao.findGradesByStudentId(1);
+
+        // verify that there is a math-grade
+        assertTrue(mathGrades.iterator().hasNext());
+        assertTrue(scienceGrades.iterator().hasNext());
+        assertTrue(historyGrades.iterator().hasNext());
     }
 
     @AfterEach

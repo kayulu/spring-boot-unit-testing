@@ -46,9 +46,12 @@ public class StudentAndGradeServiceTest {
 
     @BeforeEach
     public void setupDatabase() {
-        CollegeStudent testStudent = new CollegeStudent("Liam", "Smith", "liam.smith@example.com");
+        String sql = "insert into student(firstname, lastname, email_address) values (?,?,?)";
+        jdbcTemplate.update(sql, "Liam", "Smith", "liam.smith@example.com");
 
-        studentDao.save(testStudent); // H2 sequences for primary keys start from 1
+        jdbcTemplate.execute("insert into math_grade(student_id, grade) values (1, 99.0)");
+        jdbcTemplate.execute("insert into science_grade(student_id, grade) values (1, 99.0)");
+        jdbcTemplate.execute("insert into history_grade(student_id, grade) values (1, 99.0)");
     }
 
     @Test
@@ -94,7 +97,6 @@ public class StudentAndGradeServiceTest {
         assertTrue(studentService.createGrade(80.3, 1, "math"));
         assertTrue(studentService.createGrade(80.4, 1, "science"));
         assertTrue(studentService.createGrade(80.5, 1, "history"));
-        assertFalse(studentService.createGrade(80.5, 1, "illegal"));
 
         // get all math-grades of a student
         Iterable<MathGrade> mathGrades = mathGradesDao.findGradesByStudentId(1);
@@ -107,9 +109,28 @@ public class StudentAndGradeServiceTest {
         assertTrue(historyGrades.iterator().hasNext());
     }
 
+    @Test
+    public void createGradeServiceForInvalidInput() {
+        // invalid grade: grade < 0
+        assertFalse(studentService.createGrade(-100.0, 1, "math"));
+
+        // invalid grade: grade > 100
+        assertFalse(studentService.createGrade(100.5, 1, "math"));
+
+        // invalid studentId: 2
+        assertFalse(studentService.createGrade(80.5, 2, "math"));
+
+        // invalid grade-type
+        assertFalse(studentService.createGrade(80.5, 1, "invalid"));
+    }
+
     @AfterEach
     public void setupAfterTransaction() {
         jdbcTemplate.execute("DELETE FROM student");
         jdbcTemplate.execute("ALTER TABLE student ALTER COLUMN ID RESTART WITH 1");
+
+        jdbcTemplate.execute("DELETE FROM math_grade");
+        jdbcTemplate.execute("DELETE FROM science_grade");
+        jdbcTemplate.execute("DELETE FROM history_grade");
     }
 }

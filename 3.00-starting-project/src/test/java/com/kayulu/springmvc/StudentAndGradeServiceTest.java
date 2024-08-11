@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @TestPropertySource("/application.properties")
 @SpringBootTest
@@ -123,6 +124,30 @@ public class StudentAndGradeServiceTest {
 
         // invalid grade-type
         assertFalse(studentService.createGrade(80.5, 1, "invalid"));
+    }
+
+    @Test
+    public void deleteGradeService() {
+        assertEquals(1, studentService.deleteGrade(1, "math"),
+                "Deletion of grade with grade-id 1 should return student-id 1");
+        assertEquals(1, studentService.deleteGrade(1, "science"),
+                "Deletion of grade with grade-id 1 should return student-id 1");
+        assertEquals(1, studentService.deleteGrade(1, "HISTORY"),
+                "Deletion of grade with grade-id 1 should return student-id 1");
+    }
+
+    @Test
+    public void deleteGradeServiceForInvalidInput() {
+        assertNotEquals(1, studentService.deleteGrade(2, "math"),
+                "Deletion of grade with grade-id 2 should not return student-id 1");
+        assertNotEquals(1, studentService.deleteGrade(2, "science"),
+                "Deletion of grade with grade-id 2 should not return student-id 1");
+        assertNotEquals(1, studentService.deleteGrade(2, "HISTORY"),
+                "Deletion of grade with grade-id 2 should not return student-id 1");
+
+        //invalid subject
+        assertNotEquals(1, studentService.deleteGrade(1, "literature"),
+                "Deletion of grade with grade-id 1 and subject 'literature' should not return student-id 1");
     }
 
     @AfterEach

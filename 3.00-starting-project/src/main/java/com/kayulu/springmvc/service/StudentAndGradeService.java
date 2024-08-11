@@ -88,4 +88,29 @@ public class StudentAndGradeService {
             return false;
         }
     }
+
+    public int deleteGrade(int gradeId, String gradeType) {
+        switch (gradeType.toLowerCase()) {
+            case "math" -> {
+                Optional<MathGrade> grade = mathGradesDao.findById(gradeId);
+                if(grade.isPresent())
+                    mathGradesDao.deleteById(gradeId);
+
+                return grade.map(MathGrade::getStudentId).orElse(-1);
+            }
+            case "science" -> {
+                Optional<ScienceGrade> grade = scienceGradesDao.findById(gradeId);
+                if(grade.isPresent())
+                    scienceGradesDao.deleteById(gradeId);
+                return grade.map(ScienceGrade::getStudentId).orElse(-1);
+            }
+            case "history" -> {
+                Optional<HistoryGrade> grade = historyGradesDao.findById(gradeId);
+                if(grade.isPresent())
+                    historyGradesDao.deleteById(gradeId);
+                return grade.map(HistoryGrade::getStudentId).orElse(-1);
+            }
+            default -> {return -1;}
+        }
+    }
 }

@@ -50,9 +50,12 @@ public class StudentAndGradeService {
     }
 
     public void deleteStudentById(int id) {
-        logger.info("student with id {} exists: {}", id, checkIfStudentIsPresent(id));
-        studentDao.deleteById(id);
-        logger.info("student with id {} exists: {}", id, checkIfStudentIsPresent(id));
+        if(studentDao.findById(id).isPresent()) {
+            studentDao.deleteById(id);
+            mathGradesDao.deleteByStudentId(id);
+            scienceGradesDao.deleteByStudentId(id);
+            historyGradesDao.deleteByStudentId(id);
+        }
     }
 
     public Iterable<CollegeStudent> getGradeBook() {
@@ -102,12 +105,14 @@ public class StudentAndGradeService {
                 Optional<ScienceGrade> grade = scienceGradesDao.findById(gradeId);
                 if(grade.isPresent())
                     scienceGradesDao.deleteById(gradeId);
+
                 return grade.map(ScienceGrade::getStudentId).orElse(-1);
             }
             case "history" -> {
                 Optional<HistoryGrade> grade = historyGradesDao.findById(gradeId);
                 if(grade.isPresent())
                     historyGradesDao.deleteById(gradeId);
+
                 return grade.map(HistoryGrade::getStudentId).orElse(-1);
             }
             default -> {return -1;}

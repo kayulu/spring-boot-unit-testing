@@ -21,6 +21,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -66,18 +67,24 @@ public class StudentAndGradeServiceTest {
     }
 
     @Test
-    public void existingStudentRetrievable() {
+    public void retrieveStudentService() {
         assertTrue(studentService.checkIfStudentIsPresent(1), "Student with id 1 should exist");
         assertFalse(studentService.checkIfStudentIsPresent(2), "Student with id 2 should not exist");
     }
 
     @Test
-    public void existingStudentDeletable() {
-        assertTrue(studentService.checkIfStudentIsPresent(1), "Student with id 1 should exist");
+    public void deleteStudentService() {
+        assertTrue(studentDao.findById(1).isPresent(), "Student with id 1 should exist");
+        assertTrue(mathGradesDao.findById(1).isPresent(), "Grade with id 1 should exist");
+        assertTrue(scienceGradesDao.findById(1).isPresent(), "Grade with id 1 should exist");
+        assertTrue(historyGradesDao.findById(1).isPresent(), "Grade with id 1 should exist");
 
         studentService.deleteStudentById(1);
 
         assertFalse(studentService.checkIfStudentIsPresent(1), "Student with id 1 should not exist");
+        assertFalse(mathGradesDao.findById(1).isPresent(), "Grade with id 1 should not exist");
+        assertFalse(scienceGradesDao.findById(1).isPresent(), "Grade with id 1 should not exist");
+        assertFalse(historyGradesDao.findById(1).isPresent(), "Grade with id 1 should not exist");
     }
 
     @Sql("/insertData.sql")
@@ -156,7 +163,12 @@ public class StudentAndGradeServiceTest {
         jdbcTemplate.execute("ALTER TABLE student ALTER COLUMN ID RESTART WITH 1");
 
         jdbcTemplate.execute("DELETE FROM math_grade");
+        jdbcTemplate.execute("ALTER TABLE math_grade ALTER COLUMN ID RESTART WITH 1");
+
         jdbcTemplate.execute("DELETE FROM science_grade");
+        jdbcTemplate.execute("ALTER TABLE science_grade ALTER COLUMN ID RESTART WITH 1");
+
         jdbcTemplate.execute("DELETE FROM history_grade");
+        jdbcTemplate.execute("ALTER TABLE history_grade ALTER COLUMN ID RESTART WITH 1");
     }
 }

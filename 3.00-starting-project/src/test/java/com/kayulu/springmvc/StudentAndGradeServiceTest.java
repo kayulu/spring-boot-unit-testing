@@ -19,6 +19,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -104,9 +105,9 @@ public class StudentAndGradeServiceTest {
         Iterable<HistoryGrade> historyGrades = historyGradesDao.findGradesByStudentId(1);
 
         // verify that there is a math-grade
-        assertTrue(mathGrades.iterator().hasNext());
-        assertTrue(scienceGrades.iterator().hasNext());
-        assertTrue(historyGrades.iterator().hasNext());
+        assertEquals(2, ((Collection<MathGrade>) mathGrades).size());
+        assertEquals(2, ((Collection<ScienceGrade>) scienceGrades).size());
+        assertEquals(2, ((Collection<HistoryGrade>) historyGrades).size());
     }
 
     @Test

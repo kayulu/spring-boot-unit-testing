@@ -1,9 +1,6 @@
 package com.kayulu.springmvc;
 
-import com.kayulu.springmvc.models.CollegeStudent;
-import com.kayulu.springmvc.models.HistoryGrade;
-import com.kayulu.springmvc.models.MathGrade;
-import com.kayulu.springmvc.models.ScienceGrade;
+import com.kayulu.springmvc.models.*;
 import com.kayulu.springmvc.repository.HistoryGradesDao;
 import com.kayulu.springmvc.repository.MathGradesDao;
 import com.kayulu.springmvc.repository.ScienceGradesDao;
@@ -155,6 +152,27 @@ public class StudentAndGradeServiceTest {
         //invalid subject
         assertNotEquals(1, studentService.deleteGrade(1, "literature"),
                 "Deletion of grade with grade-id 1 and subject 'literature' should not return student-id 1");
+    }
+
+    @Test
+    public void studentInformation() {
+        GradebookCollegeStudent student = studentService.getStudentInformation(1);
+
+        assertNotNull(student);
+        assertEquals(1, student.getId());
+        assertEquals("Liam", student.getFirstname());
+        assertEquals("Smith", student.getLastname());
+        assertEquals("Liam Smith", student.getFullName());
+        assertEquals("liam.smith@example.com", student.getEmailAddress());
+        assertEquals(1, student.getStudentGrades().getMathGradeResults().size());
+        assertEquals(1, student.getStudentGrades().getScienceGradeResults().size());
+        assertEquals(1, student.getStudentGrades().getHistoryGradeResults().size());
+    }
+
+    @Test
+    public void studentInformationReturnNull() {
+        GradebookCollegeStudent student = studentService.getStudentInformation(0);
+        assertNull(student);
     }
 
     @AfterEach

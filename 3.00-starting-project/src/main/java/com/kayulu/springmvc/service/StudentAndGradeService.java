@@ -1,9 +1,6 @@
 package com.kayulu.springmvc.service;
 
-import com.kayulu.springmvc.models.CollegeStudent;
-import com.kayulu.springmvc.models.HistoryGrade;
-import com.kayulu.springmvc.models.MathGrade;
-import com.kayulu.springmvc.models.ScienceGrade;
+import com.kayulu.springmvc.models.*;
 import com.kayulu.springmvc.repository.HistoryGradesDao;
 import com.kayulu.springmvc.repository.MathGradesDao;
 import com.kayulu.springmvc.repository.ScienceGradesDao;
@@ -14,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -117,5 +117,34 @@ public class StudentAndGradeService {
             }
             default -> {return -1;}
         }
+    }
+
+    public GradebookCollegeStudent getStudentInformation(int id) {
+        Optional<CollegeStudent> student = studentDao.findById(id);
+
+        if(student.isEmpty())
+            return null;
+
+        Iterable<MathGrade> mathGrades = mathGradesDao.findGradesByStudentId(1);
+        Iterable<ScienceGrade> scienceGrades = scienceGradesDao.findGradesByStudentId(1);
+        Iterable<HistoryGrade> historyGrades = historyGradesDao.findGradesByStudentId(1);
+
+        List<Grade> mathGradeList = new ArrayList<>();
+        mathGrades.forEach(mathGradeList::add);
+
+        List<Grade> scienceGradeList = new ArrayList<>();
+        scienceGrades.forEach(scienceGradeList::add);
+
+        List<Grade> historyGradeList = new ArrayList<>();
+        historyGrades.forEach(historyGradeList::add);
+
+        StudentGrades studentGrades = new StudentGrades();
+        studentGrades.setMathGradeResults(mathGradeList);
+        studentGrades.setScienceGradeResults(scienceGradeList);
+        studentGrades.setHistoryGradeResults(historyGradeList);
+
+        return new GradebookCollegeStudent(student.get().getId(),
+                student.get().getFirstname(), student.get().getLastname(),
+                student.get().getEmailAddress(), studentGrades);
     }
 }

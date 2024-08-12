@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -31,10 +32,34 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestPropertySource("/application.properties")
+@TestPropertySource("/test-application.properties")
 @SpringBootTest
 @AutoConfigureMockMvc
 class GradebookControllerTest {
+    @Value("${sql.scripts.create.student}")
+    String createStudent;
+
+    @Value("${sql.scripts.create.math_grade}")
+    String createMathGrade;
+
+    @Value("${sql.scripts.create.science_grade}")
+    String createScienceGrade;
+
+    @Value("${sql.scripts.create.history_grade}")
+    String createHistoryGrade;
+
+    @Value("${sql.script.delete.student}")
+    String deleteStudent;
+
+    @Value("${sql.script.delete.math.grade}")
+    private String deleteMathGrade;
+
+    @Value("${sql.script.delete.science.grade}")
+    private String deleteScienceGrade;
+
+    @Value("${sql.script.delete.history.grade}")
+    private String deleteHistoryGrade;
+
     private static MockHttpServletRequest request;
 
     @Autowired
@@ -59,8 +84,11 @@ class GradebookControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        CollegeStudent testStudent = new CollegeStudent("Kay", "Ulu", "kay.ulu@example.com");
-        studentDao.save(testStudent); // H2 sequences for primary keys start from 1
+        jdbcTemplate.execute(createStudent);
+
+        jdbcTemplate.execute(createMathGrade);
+        jdbcTemplate.execute(createScienceGrade);
+        jdbcTemplate.execute(createHistoryGrade);
     }
 
     @Test
@@ -131,7 +159,9 @@ class GradebookControllerTest {
 
     @AfterEach
     public void setupAfterTransaction() {
-        jdbcTemplate.execute("DELETE FROM student");
-        jdbcTemplate.execute("ALTER TABLE student ALTER COLUMN ID RESTART WITH 1");
+        jdbcTemplate.execute(deleteStudent);
+        jdbcTemplate.execute(deleteMathGrade);
+        jdbcTemplate.execute(deleteScienceGrade);
+        jdbcTemplate.execute(deleteHistoryGrade);
     }
 }

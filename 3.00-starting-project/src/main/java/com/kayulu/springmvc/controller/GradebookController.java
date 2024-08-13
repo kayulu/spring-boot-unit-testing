@@ -28,8 +28,33 @@ public class GradebookController {
 
 	@GetMapping("/studentInformation/{id}")
 	public String studentInformation(@PathVariable int id, Model m) {
+		GradebookCollegeStudent student = studentAndGradeService.getStudentInformation(id);
+
+		if(student == null)
+			return "error";
+
+		StudentGrades studentGrades = student.getStudentGrades();
+
+		List<Grade> mathGrades = studentGrades.getMathGradeResults();
+		if(mathGrades.isEmpty())
+			m.addAttribute("mathAverage", studentGrades.findGradePointAverage(mathGrades));
+		else
+			m.addAttribute("mathAverage", "N/A");
+
+		List<Grade> scienceGrades = studentGrades.getScienceGradeResults();
+		if(scienceGrades.isEmpty())
+			m.addAttribute("scienceAverage", studentGrades.findGradePointAverage(scienceGrades));
+		else
+			m.addAttribute("scienceAverage", "N/A");
+
+		List<Grade> historyGrades = studentGrades.getHistoryGradeResults();
+		if(historyGrades.isEmpty())
+			m.addAttribute("historyAverage", studentGrades.findGradePointAverage(historyGrades));
+		else
+			m.addAttribute("historyAverage", "N/A");
+
 		return "studentInformation";
-		}
+	}
 
 	@PostMapping("/")
 	public String createStudent(@ModelAttribute("student") CollegeStudent student, Model model) {

@@ -25,11 +25,11 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource("/test-application.properties")
@@ -155,6 +155,28 @@ class GradebookControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         ModelAndViewAssert.assertViewName(result.getModelAndView(), "error");
+    }
+
+    @Test
+    public void studentInformationHttpRequest() throws Exception {
+        assertTrue(studentDao.findById(1).isPresent());
+
+        MvcResult result = mockMvc.perform(get("/studentInformation/{id}", 1))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(
+                Objects.requireNonNull(result.getModelAndView()), "studentInformation");
+    }
+
+    @Test
+    public void studentInformationHttpRequestError() throws Exception {
+        assertTrue(studentDao.findById(0).isEmpty());
+
+        MvcResult result = mockMvc.perform(get("/studentInformation/{id}", 0))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(
+                Objects.requireNonNull(result.getModelAndView()), "error");
     }
 
     @AfterEach

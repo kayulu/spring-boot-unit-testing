@@ -21,7 +21,7 @@ public class GradebookController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String getStudents(Model m) {
 		Iterable<CollegeStudent> students = studentAndGradeService.getGradeBook();
-		m.addAttribute(students);
+		m.addAttribute("students", students);
 
 		return "index";
 	}
@@ -53,12 +53,17 @@ public class GradebookController {
 		else
 			m.addAttribute("historyAverage", "N/A");
 
+
+		m.addAttribute("student", student);
+
 		return "studentInformation";
 	}
 
 	@PostMapping("/")
 	public String createStudent(@ModelAttribute("student") CollegeStudent student, Model model) {
-
+		// Due to the @ModelAttribute annotation spring will create a College student based on the ur-encoded
+		// form-parameters that were sent in the request-body. It will also add that object to the model
+		// to be available in the 'view'.
 		studentAndGradeService.createNewStudent(student);
 
 		Iterable<CollegeStudent> students = studentAndGradeService.getGradeBook();
@@ -67,7 +72,7 @@ public class GradebookController {
 		return "index";
 	}
 
-	@DeleteMapping("/delete/student/{id}")
+	@GetMapping("/delete/student/{id}")
 	public String deleteStudent(@PathVariable int id, Model m) {
 		if(!studentAndGradeService.checkIfStudentIsPresent(id))
 			return "error";
@@ -80,20 +85,25 @@ public class GradebookController {
 		return "index";
 	}
 
-	@PostMapping("/grade")
+	@PostMapping("/grades")
 	public String createGrade(
 			@ModelAttribute("studentId") int studentId,
 			@ModelAttribute("gradeType") String gradeType,
 			@ModelAttribute("grade") double grade,
 			Model model) {
 
-		return studentAndGradeService.createGrade(grade, studentId, gradeType) ? "studentInformation" : "error";
+		if(!studentAndGradeService.createGrade(grade, studentId, gradeType))
+			return "error";
+
+		model.addAttribute("student", studentAndGradeService.getStudentInformation(studentId));
+
+		return "studentInformation";
 	}
 
-	@DeleteMapping("/grade")
+	@GetMapping("/grades/{id}/{gradeType}")
 	public String deleteGrade(
-			@ModelAttribute("id") int gradeId,
-			@ModelAttribute("gradeType") String gradeType,
+			@PathVariable("id") int gradeId,
+			@PathVariable("gradeType") String gradeType,
 			Model m) {
 		int studentId = studentAndGradeService.deleteGrade(gradeId, gradeType);
 		if(studentId == -1)

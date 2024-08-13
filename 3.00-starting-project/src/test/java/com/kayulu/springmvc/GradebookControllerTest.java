@@ -145,7 +145,7 @@ class GradebookControllerTest {
     public void deleteStudentHttpRequest() throws Exception {
         assertNotNull(studentDao.findById(1));
 
-        MvcResult result = mockMvc.perform(delete("/delete/student/{id}", 1))
+        MvcResult result = mockMvc.perform(get("/delete/student/{id}", 1))
                         .andExpect(status().isOk()).andReturn();
 
         ModelAndViewAssert.assertViewName(result.getModelAndView(), "index");
@@ -157,7 +157,7 @@ class GradebookControllerTest {
     public void deleteStudentErrorPage() throws Exception {
         assertTrue(studentDao.findById(0).isEmpty());
 
-        MvcResult result = mockMvc.perform(delete("/delete/student/{id}", 0))
+        MvcResult result = mockMvc.perform(get("/delete/student/{id}", 0))
                 .andExpect(status().isOk()).andReturn();
 
         ModelAndViewAssert.assertViewName(result.getModelAndView(), "error");
@@ -193,7 +193,7 @@ class GradebookControllerTest {
 
         assertEquals(1, student.getStudentGrades().getMathGradeResults().size());
 
-        MvcResult result = mockMvc.perform(post("/grade")
+        MvcResult result = mockMvc.perform(post("/grades")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("studentId", "1")
                 .param("gradeType", "math")
@@ -217,7 +217,7 @@ class GradebookControllerTest {
         assertEquals(1, student.getStudentGrades().getMathGradeResults().size());
 
         // perform invalid gradeType
-        MvcResult result = mockMvc.perform(post("/grade")
+        MvcResult result = mockMvc.perform(post("/grades")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("studentId", "1")
                 .param("gradeType", "literature")   // invalid grade-type
@@ -241,7 +241,7 @@ class GradebookControllerTest {
         assertEquals(1, student.getStudentGrades().getMathGradeResults().size());
 
         // perform invalid grade
-        MvcResult result = mockMvc.perform(post("/grade")
+        MvcResult result = mockMvc.perform(post("/grades")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("studentId", "1")
                         .param("gradeType", "math")
@@ -265,7 +265,7 @@ class GradebookControllerTest {
         assertNull(student);
 
         // perform invalid id
-        MvcResult result = mockMvc.perform(post("/grade")
+        MvcResult result = mockMvc.perform(post("/grades")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("studentId", "0")    // invalid student-id
                         .param("gradeType", "math")
@@ -282,10 +282,8 @@ class GradebookControllerTest {
 
         assertTrue(mathGrade.isPresent());
 
-        MvcResult result = mockMvc.perform(delete("/grade")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("id", "1")
-                        .param("gradeType", "math"))
+        MvcResult result = mockMvc.perform(get("/grades/1/math")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk()).andReturn();
 
         ModelAndViewAssert.assertViewName(
@@ -300,10 +298,8 @@ class GradebookControllerTest {
 
         assertFalse(mathGrade.isPresent());
 
-        MvcResult result = mockMvc.perform(delete("/grade")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("id", "0")   // invalid grade-id
-                        .param("gradeType", "math"))
+        MvcResult result = mockMvc.perform(get("/grades/0/math")    // invalid grade-id
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk()).andReturn();
 
         ModelAndViewAssert.assertViewName(
@@ -312,10 +308,8 @@ class GradebookControllerTest {
 
     @Test
     public void deleteInvalidGradeTypeHttpRequest() throws Exception {
-        MvcResult result = mockMvc.perform(delete("/grade")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("id", "1")
-                        .param("gradeType", "literature"))  // invalid grade-type
+        MvcResult result = mockMvc.perform(get("/grades/1/literature")  // invalid grade-type
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk()).andReturn();
 
         ModelAndViewAssert.assertViewName(

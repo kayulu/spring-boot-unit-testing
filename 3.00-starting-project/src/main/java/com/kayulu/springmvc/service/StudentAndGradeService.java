@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,9 +128,9 @@ public class StudentAndGradeService {
         if(student.isEmpty())
             return null;
 
-        Iterable<MathGrade> mathGrades = mathGradesDao.findGradesByStudentId(1);
-        Iterable<ScienceGrade> scienceGrades = scienceGradesDao.findGradesByStudentId(1);
-        Iterable<HistoryGrade> historyGrades = historyGradesDao.findGradesByStudentId(1);
+        Iterable<MathGrade> mathGrades = mathGradesDao.findGradesByStudentId(id);
+        Iterable<ScienceGrade> scienceGrades = scienceGradesDao.findGradesByStudentId(id);
+        Iterable<HistoryGrade> historyGrades = historyGradesDao.findGradesByStudentId(id);
 
         List<Grade> mathGradeList = new ArrayList<>();
         mathGrades.forEach(mathGradeList::add);

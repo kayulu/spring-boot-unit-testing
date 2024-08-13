@@ -2,6 +2,8 @@ package com.kayulu.springmvc;
 
 import com.kayulu.springmvc.models.CollegeStudent;
 import com.kayulu.springmvc.models.GradebookCollegeStudent;
+import com.kayulu.springmvc.models.MathGrade;
+import com.kayulu.springmvc.repository.MathGradesDao;
 import com.kayulu.springmvc.repository.StudentDao;
 import com.kayulu.springmvc.service.StudentAndGradeService;
 import org.junit.jupiter.api.AfterEach;
@@ -23,10 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -65,6 +64,9 @@ class GradebookControllerTest {
 
     @Autowired
     private StudentDao studentDao;
+
+    @Autowired
+    private MathGradesDao mathGradesDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -268,6 +270,52 @@ class GradebookControllerTest {
                         .param("studentId", "0")    // invalid student-id
                         .param("gradeType", "math")
                         .param("grade", "88.0"))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(
+                result.getModelAndView(), "error");
+    }
+
+    @Test
+    public void deleteValidGradeHttpRequest() throws Exception {
+        Optional<MathGrade> mathGrade = mathGradesDao.findById(1);
+
+        assertTrue(mathGrade.isPresent());
+
+        MvcResult result = mockMvc.perform(delete("/grade")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("id", "1")
+                        .param("gradeType", "math"))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(
+                result.getModelAndView(), "studentInformation");
+
+        assertTrue(mathGradesDao.findById(1).isEmpty());
+    }
+
+    @Test
+    public void deleteInvalidGradeHttpRequest() throws Exception {
+        Optional<MathGrade> mathGrade = mathGradesDao.findById(0);
+
+        assertFalse(mathGrade.isPresent());
+
+        MvcResult result = mockMvc.perform(delete("/grade")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("id", "0")   // invalid grade-id
+                        .param("gradeType", "math"))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(
+                result.getModelAndView(), "error");
+    }
+
+    @Test
+    public void deleteInvalidGradeTypeHttpRequest() throws Exception {
+        MvcResult result = mockMvc.perform(delete("/grade")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("id", "1")
+                        .param("gradeType", "literature"))  // invalid grade-type
                 .andExpect(status().isOk()).andReturn();
 
         ModelAndViewAssert.assertViewName(

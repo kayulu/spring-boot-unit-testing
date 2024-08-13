@@ -89,4 +89,18 @@ public class GradebookController {
 
 		return studentAndGradeService.createGrade(grade, studentId, gradeType) ? "studentInformation" : "error";
 	}
+
+	@DeleteMapping("/grade")
+	public String deleteGrade(
+			@ModelAttribute("id") int gradeId,
+			@ModelAttribute("gradeType") String gradeType,
+			Model m) {
+		int studentId = studentAndGradeService.deleteGrade(gradeId, gradeType);
+		if(studentId == -1)
+			return "error";
+
+		m.addAttribute("student", studentAndGradeService.getStudentInformation(studentId));
+
+		return "studentInformation";
+	}
 }

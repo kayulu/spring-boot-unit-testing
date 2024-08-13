@@ -1,6 +1,7 @@
 package com.kayulu.springmvc;
 
 import com.kayulu.springmvc.models.CollegeStudent;
+import com.kayulu.springmvc.models.GradebookCollegeStudent;
 import com.kayulu.springmvc.repository.StudentDao;
 import com.kayulu.springmvc.service.StudentAndGradeService;
 import org.junit.jupiter.api.AfterEach;
@@ -72,6 +73,9 @@ class GradebookControllerTest {
     MockMvc mockMvc;
 
     @Mock
+    private StudentAndGradeService studentServiceMock;
+
+    @Autowired
     private StudentAndGradeService studentService;
 
     @BeforeAll
@@ -97,9 +101,9 @@ class GradebookControllerTest {
         CollegeStudent student2 = new CollegeStudent("Liam", "Smith", "liam.smith@example.com");
         List<CollegeStudent> students = new ArrayList<>(Arrays.asList(student1, student2));
 
-        when(studentService.getGradeBook()).thenReturn(students);
+        when(studentServiceMock.getGradeBook()).thenReturn(students);
 
-        assertIterableEquals(students, studentService.getGradeBook());
+        assertIterableEquals(students, studentServiceMock.getGradeBook());
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/"))
                 .andExpect(status().isOk()).andReturn();
@@ -116,9 +120,9 @@ class GradebookControllerTest {
 
         List<CollegeStudent> students = new ArrayList<>(List.of(student));
 
-        when(studentService.getGradeBook()).thenReturn(students);
+        when(studentServiceMock.getGradeBook()).thenReturn(students);
 
-        assertEquals(students, studentService.getGradeBook());
+        assertEquals(students, studentServiceMock.getGradeBook());
 
         MvcResult result = mockMvc.perform(post("/")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -177,6 +181,97 @@ class GradebookControllerTest {
 
         ModelAndViewAssert.assertViewName(
                 Objects.requireNonNull(result.getModelAndView()), "error");
+    }
+
+    @Test
+    public void createValidGradeHttpRequest() throws Exception {
+        assertTrue(studentDao.findById(1).isPresent());
+
+        GradebookCollegeStudent student = studentService.getStudentInformation(1);
+
+        assertEquals(1, student.getStudentGrades().getMathGradeResults().size());
+
+        MvcResult result = mockMvc.perform(post("/grade")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("studentId", "1")
+                .param("gradeType", "math")
+                .param("grade", "99.0"))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(
+                result.getModelAndView(), "studentInformation");
+
+        student = studentService.getStudentInformation(1);
+
+        assertEquals(2, student.getStudentGrades().getMathGradeResults().size());
+    }
+
+    @Test
+    public void createInvalidGradeTypeHttpRequest() throws Exception {
+        assertTrue(studentDao.findById(1).isPresent());
+
+        GradebookCollegeStudent student = studentService.getStudentInformation(1);
+
+        assertEquals(1, student.getStudentGrades().getMathGradeResults().size());
+
+        // perform invalid gradeType
+        MvcResult result = mockMvc.perform(post("/grade")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("studentId", "1")
+                .param("gradeType", "literature")   // invalid grade-type
+                .param("grade", "99.0"))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(
+                result.getModelAndView(), "error");
+
+        student = studentService.getStudentInformation(1);
+
+        assertEquals(1, student.getStudentGrades().getMathGradeResults().size()); // has not changed
+    }
+
+    @Test
+    public void createInvalidGradeHttpRequest() throws Exception {
+        assertTrue(studentDao.findById(1).isPresent());
+
+        GradebookCollegeStudent student = studentService.getStudentInformation(1);
+
+        assertEquals(1, student.getStudentGrades().getMathGradeResults().size());
+
+        // perform invalid grade
+        MvcResult result = mockMvc.perform(post("/grade")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("studentId", "1")
+                        .param("gradeType", "math")
+                        .param("grade", "101.0"))   // invalid grade
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(
+                result.getModelAndView(), "error");
+
+        student = studentService.getStudentInformation(1);
+
+        assertEquals(1, student.getStudentGrades().getMathGradeResults().size()); // has not changed
+    }
+
+    @Test
+    public void createInvalidStudentIdRequest() throws Exception {
+        assertTrue(studentDao.findById(0).isEmpty());
+
+        GradebookCollegeStudent student = studentService.getStudentInformation(0);
+
+        assertNull(student);
+
+        // perform invalid id
+        MvcResult result = mockMvc.perform(post("/grade")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("studentId", "0")    // invalid student-id
+                        .param("gradeType", "math")
+                        .param("grade", "88.0"))
+                .andExpect(status().isOk()).andReturn();
+
+        ModelAndViewAssert.assertViewName(
+                result.getModelAndView(), "error");
     }
 
     @AfterEach

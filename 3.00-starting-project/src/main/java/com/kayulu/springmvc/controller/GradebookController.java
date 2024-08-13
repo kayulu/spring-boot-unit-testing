@@ -79,4 +79,14 @@ public class GradebookController {
 
 		return "index";
 	}
+
+	@PostMapping("/grade")
+	public String createGrade(
+			@ModelAttribute("studentId") int studentId,
+			@ModelAttribute("gradeType") String gradeType,
+			@ModelAttribute("grade") double grade,
+			Model model) {
+
+		return studentAndGradeService.createGrade(grade, studentId, gradeType) ? "studentInformation" : "error";
+	}
 }

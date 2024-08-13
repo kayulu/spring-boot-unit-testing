@@ -62,7 +62,10 @@ public class StudentAndGradeService {
     }
 
     public boolean createGrade(double grade, int studentId, String gradeType) {
-        if(studentDao.findById(studentId).isEmpty() || grade < 0 || grade > 100)
+        if(studentDao.findById(studentId).isEmpty() || grade < 0 || grade > 100.0
+                || !(gradeType.equalsIgnoreCase("math")
+                || gradeType.equalsIgnoreCase("science")
+                || gradeType.equalsIgnoreCase("history")))
             return false;
 
         try {

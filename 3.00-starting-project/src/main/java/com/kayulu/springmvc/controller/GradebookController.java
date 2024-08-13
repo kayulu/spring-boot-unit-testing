@@ -36,19 +36,19 @@ public class GradebookController {
 		StudentGrades studentGrades = student.getStudentGrades();
 
 		List<Grade> mathGrades = studentGrades.getMathGradeResults();
-		if(mathGrades.isEmpty())
+		if(!mathGrades.isEmpty())
 			m.addAttribute("mathAverage", studentGrades.findGradePointAverage(mathGrades));
 		else
 			m.addAttribute("mathAverage", "N/A");
 
 		List<Grade> scienceGrades = studentGrades.getScienceGradeResults();
-		if(scienceGrades.isEmpty())
+		if(!scienceGrades.isEmpty())
 			m.addAttribute("scienceAverage", studentGrades.findGradePointAverage(scienceGrades));
 		else
 			m.addAttribute("scienceAverage", "N/A");
 
 		List<Grade> historyGrades = studentGrades.getHistoryGradeResults();
-		if(historyGrades.isEmpty())
+		if(!historyGrades.isEmpty())
 			m.addAttribute("historyAverage", studentGrades.findGradePointAverage(historyGrades));
 		else
 			m.addAttribute("historyAverage", "N/A");

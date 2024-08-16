@@ -1,0 +1,18 @@
+version: '3.8'  # Specify the Compose file version
+
+services:
+  mysql:
+    image: mysql:9.0.1  # Use the latest MySQL image
+    container_name: mysql-for_grade_app  # Name the container
+    environment:
+      MYSQL_ROOT_PASSWORD: root  # Set the MySQL root password
+      MYSQL_DATABASE: testDB  # Create a database
+      MYSQL_USER: grade_app_user  # Create a user
+      MYSQL_PASSWORD: password  # Set the password for the user
+    ports:
+      - "3306:3306"  # Map port 3306 on host to port 3306 in container
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persist MySQL data on host machine
+
+volumes:
+  mysql_data:  # Define a volume to persist MySQL data
